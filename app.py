@@ -70,7 +70,7 @@ with aba_geral:
             nova_qtd = st.number_input(f"Qtd {cod}", min_value=0, value=qtd_atual, key=f"nb_{cod}")
             st.session_state.meu_album[cod] = nova_qtd
 
-# --- ABA 2: ESTATÍSTICAS E REPETIDAS (ATUALIZADA) ---
+# --- ABA 2: ESTATÍSTICAS E REPETIDAS ---
 with aba_stats:
     st.header("📊 Resumo do Álbum")
     
@@ -86,7 +86,6 @@ with aba_stats:
     st.divider()
     st.subheader("♻️ Figurinhas para Trocar")
     
-    # Lógica de expanders para repetidas (conforme Captura de tela 2026-05-13 185526.png)
     tem_repetida = False
     for nome_sel, sigla in selecoes.items():
         limite = 14 if sigla == "CC" else (19 if sigla == "FWC" else 20)
@@ -106,7 +105,7 @@ with aba_stats:
     if not tem_repetida:
         st.info("Você ainda não tem figurinhas repetidas.")
 
-# --- ABA 3: FALTANTES (CONFORME Captura de tela 2026-05-13 185535.png) ---
+# --- ABA 3: FALTANTES ---
 with aba_faltantes:
     st.header("❌ O que falta para completar")
     
@@ -128,6 +127,20 @@ with aba_faltantes:
     if not faltam_alguma:
         st.success("🎉 Álbum completo!")
 
-# --- SIDEBAR ---
+# --- SIDEBAR (CONTROLES E BACKUP) ---
+st.sidebar.header("⚙️ Controles")
+
 if st.sidebar.button("💾 Salvar Tudo"):
     salvar_dados(st.session_state.meu_album)
+
+if st.sidebar.button("🔄 Sincronizar Arquivo"):
+    st.session_state.meu_album = carregar_dados()
+    st.rerun()
+
+st.sidebar.divider()
+st.sidebar.subheader("☁️ Backup para GitHub")
+st.sidebar.write("Copie o código abaixo e cole no GitHub para salvar permanentemente:")
+
+# Gera o JSON atualizado para copiar
+json_string = json.dumps(st.session_state.meu_album, indent=4)
+st.sidebar.text_area("JSON para Backup:", value=json_string, height=250)
